@@ -2,10 +2,11 @@ from collections import defaultdict, namedtuple
 
 from nio.signal.base import Signal
 from nio.block.base import Block
+from nio.block.mixins.group_by.group_by import GroupBy
 from nio.properties import Property, VersionProperty, FloatProperty, \
     BoolProperty
 
-class SimplifyPolyline(Block):
+class SimplifyPolyline(GroupBy, Block):
 
     version = VersionProperty("0.0.1")
     high_quality = BoolProperty(default=True, title="High Quality")
@@ -16,11 +17,10 @@ class SimplifyPolyline(Block):
     def __init__(self):
         super().__init__()
 
-    def process_signals(self, signals):
+    def process_group_signals(self, signals, group, input_id=None):
         points = [{ 'x': self.x_attr(s), 'y': self.y_attr(s) } for s in signals]
         simplified = simplify(points, self.tolerance(), self.high_quality())
-        new_sigs = [Signal(p) for p in simplified]
-        self.notify_signals(new_sigs)
+        return [Signal({ 'x': p['x'], 'y': p['y'], 'group': group }) for p in simplified]
 
 
 # Reference:
