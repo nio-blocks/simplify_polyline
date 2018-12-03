@@ -1,26 +1,35 @@
-from collections import defaultdict, namedtuple
+from collections import defaultdict
+from nio import Block, Signal
+from nio.block.mixins import GroupBy
+from nio.properties import Property, BoolProperty, FloatProperty, \
+                           VersionProperty
 
-from nio.signal.base import Signal
-from nio.block.base import Block
-from nio.block.mixins.group_by.group_by import GroupBy
-from nio.properties import Property, VersionProperty, FloatProperty, \
-    BoolProperty
 
 class SimplifyPolyline(GroupBy, Block):
 
-    version = VersionProperty("0.0.1")
-    high_quality = BoolProperty(default=True, title="High Quality")
+    version = VersionProperty('0.1.0')
+    high_quality = BoolProperty(default=True, title='High Quality')
     tolerance = FloatProperty(default=0.1, title='Tolerance')
     x_attr = Property(default='{{ $x }}', title='X Attribute')
     y_attr = Property(default='{{ $y }}', title='Y Attribute')
 
-    def __init__(self):
-        super().__init__()
-
     def process_group_signals(self, signals, group, input_id=None):
-        points = [{ 'x': self.x_attr(s), 'y': self.y_attr(s) } for s in signals]
+        points = []
+        for signal in signals:
+            point = {'x': self.x_attr(signal),
+                     'y': self.y_attr(signal)}
+            points.append(point)
+
         simplified = simplify(points, self.tolerance(), self.high_quality())
-        return [Signal({ 'x': p['x'], 'y': p['y'], 'group': group }) for p in simplified]
+
+        outgoing_signals = []
+        for result in simplified:
+            signal_dict = {'x': result['x'],
+                           'y': result['y'],
+                           'group': group}
+            outgoing_signals.append(Signal(signal_dict))
+
+        return outgoing_signals
 
 
 # Reference:
@@ -113,17 +122,16 @@ def simplifyDouglasPeucker(points, tolerance):
             first_stack.append(index)
             last_stack.append(last)
 
-        # Can pop an empty array in Javascript, but not Python, so check
-        # the length of the list first
-        if len(first_stack) == 0:
-            first = None
-        else:
+        try:
             first = first_stack.pop()
+        except IndexError:
+            # first_stack is empty
+            first = None
 
-        if len(last_stack) == 0:
-            last = None
-        else:
+        try:
             last = last_stack.pop()
+        except IndexError:
+            last = None
 
     for i in range(length):
         if markers[i]:
