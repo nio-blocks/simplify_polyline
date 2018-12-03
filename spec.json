@@ -5,7 +5,7 @@
       "Signal Modification"
     ],
     "tags": "simplify reduce compress interpolate",
-    "from_readme": docs/simplify_polyline.md",
+    "from_readme": "docs/simplify_polyline.md",
     "from_python": "simplify_polyline_block.SimplifyPolyline"
   }
 }
