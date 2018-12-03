@@ -11,7 +11,6 @@ class TestSimplifyPolyline(NIOBlockTestCase):
     """
 
     signal_list = [Signal(point) for point in test_points]
-    maxDiff = None
 
     def _get_result_signals(self, group=None):
         result_signals = []
