@@ -10,19 +10,14 @@ class TestSimplifyPolyline(NIOBlockTestCase):
     source: https://github.com/mourner/simplify-js/blob/master/test/test.js
     """
 
-    def _get_result_signals(self, results, group=None):
-        result_signals = []
-        for result in results:
-            result['group'] = group
-            result_signals.append(Signal(result))
-        return result_signals
+    test_signals = [Signal(point) for point in test_points]
 
     def test_simplify(self):
         """Simplifies points correctly with the given tolerance."""
         blk = SimplifyPolyline()
         self.configure_block(blk, {'tolerance': 5})
         blk.start()
-        blk.process_signals([Signal(point) for point in test_points])
+        blk.process_signals(self.test_signals)
         blk.stop()
         self.assert_last_signal_list_notified(
             self._get_result_signals(test_results))
@@ -32,7 +27,15 @@ class TestSimplifyPolyline(NIOBlockTestCase):
         blk = SimplifyPolyline()
         self.configure_block(blk, {'tolerance': 5})
         blk.start()
-        blk.process_signals([Signal(test_points[0])])
+        blk.process_signals([self.test_signals[0]])
         blk.stop()
         self.assert_last_signal_list_notified(
             self._get_result_signals([test_points[0]]))
+
+    def _get_result_signals(self, results, group=None):
+        """Add a 'group' key to each result"""
+        result_signals = []
+        for result in results:
+            result['group'] = group
+            result_signals.append(Signal(result))
+        return result_signals
