@@ -25,12 +25,24 @@ class TestSimplifyPolyline(NIOBlockTestCase):
     def test_one_point(self):
         """Just return the points if it has only one point."""
         blk = SimplifyPolyline()
-        self.configure_block(blk, {'tolerance': 5})
+        self.configure_block(blk, {})
         blk.start()
         blk.process_signals([self.test_signals[0]])
         blk.stop()
         self.assert_last_signal_list_notified(
             self._get_result_signals([test_points[0]]))
+
+    def test_group_by(self):
+        """Group incoming signal lists before simplifying"""
+        blk = SimplifyPolyline()
+        self.configure_block(blk, {'group_by': '{{ $foo }}'})
+        blk.start()
+        blk.process_signals([Signal({'x': 0, 'y': 0, 'foo': 'bar'}),
+                             Signal({'x': 1, 'y': 1, 'foo': 'baz'})])
+        blk.stop()
+        self.assert_last_signal_list_notified([
+            Signal({'x': 0, 'y': 0, 'group': 'bar'}),
+            Signal({'x': 1, 'y': 1, 'group': 'baz'})])
 
     def _get_result_signals(self, results, group=None):
         """Add a 'group' key to each result"""
