@@ -1,4 +1,3 @@
-from collections import defaultdict
 from nio import Block, Signal
 from nio.block.mixins import GroupBy
 from nio.properties import Property, BoolProperty, FloatProperty, \
