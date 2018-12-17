@@ -1,24 +1,10 @@
-Example
-===========
+simplify_polyline
+===
 
-What does this block do?
-
-Properties
---------------
-None
+Blocks in this Collection
+---
+[SimplifyPolyLine](docs/simplify_polyline.md)
 
 Dependencies
-----------------
+---
 None
-
-Commands
-----------------
-None
-
-Input
--------
-Any list of signals.
-
-Output
----------
-Same list of signals as input.
