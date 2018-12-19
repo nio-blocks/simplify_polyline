@@ -2,7 +2,7 @@
   "nio/SimplifyPolyline": {
     "description": "Reduce the number of points in a data series.",
     "categories": [
-      "Signal Modification"
+      "Signal Modifier"
     ],
     "tags": "simplify reduce compress interpolate",
     "from_readme": "docs/simplify_polyline.md",
